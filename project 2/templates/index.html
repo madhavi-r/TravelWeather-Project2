@@ -25,7 +25,6 @@
   <link rel="stylesheet" type="text/css" href="static/css/style.css">
 </head>
 
-<body>
   <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.min.js'></script>
 <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css' type='text/css' />
 <style>
@@ -34,26 +33,34 @@
     margin-left:25%;
 }
 </style>
+<body>
   <div class="container"> 
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-10">
           <div id="map"></div>
+            <div class = 'filter-ctrl'>
+              <input id= 'filter-input' type='text' name='filter' placeholder='Filter by Station Name' />
+            </div>
       </div>
     </div>
-  </div>
-  <div class="container">
     <div class="row">
       <div class="col-md-12">
         <div class="well">
-          <h5>SELECT Sample:</h5>
+          <h5>Select Station:</h5>
           <select id="selDataset" onchange="optionChanged(this.value)"></select>
+        </div>
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Station MetaData</h3>
+          </div>
+          <div id="station-metadata" class="panel-body"></div>
         </div>
       </div>
     </div>
   </div>
 
   
-
+ 
   <script type="text/javascript" src="static/js/config.js"></script>
   <script type="text/javascript" src="static/js/logic.js"></script>
 </body>

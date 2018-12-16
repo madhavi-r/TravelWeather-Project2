@@ -40,27 +40,54 @@ def index():
 def names():
 
   # Query all station_name
+  session = Session(engine)
   results = session.query(Data.station_name).all()
 
   # Convert list of tuples into normal list
   all_names = list(np.ravel(results))
+  session.close()
 
   return jsonify(all_names)
 
-# @app.route("/forecastavg")
-# def forecastavg():
+@app.route("/data/<station_name>")
+def station_metadata(station_name):
+    """Return the MetaData for a given station."""
+    session=Session(engine)
 
-#    results = session.query(Data.fcst_avg).all()
+    sel = [
+        Data.station_id,
+        Data.state,
+        Data.country,
+        Data.production_date,
+        Data.fcst_avg,
+        Data.norm_mn,
+        Data.norm_mx,
+    ]
+    results = session.query(*sel).filter(Data.station_name == station_name).all()
+    print(results)
+    # Create a dictionary entry for each row of metadata information
+    station_metadata = {}
+    for result in results:
+        station_metadata["station_id"] = result[0]
+        station_metadata["station_name"] = result[1]
+        station_metadata["state"] = result[2]
+        station_metadata["country"] = result[3]
+        station_metadata["production_date"] = result[4]
+        station_metadata["fcst_avg"] = result[5]
+        station_metadata["norm_mn"] = result[6]
+        station_metadata["norm_mx"] = result[7]
 
-#    all_avgs = list(np.ravel(results))
+    print(station_metadata)
+    session.close()
+    return jsonify(station_metadata)
 
-#    return jsonify(all_avgs)
 @app.route("/forecast")
 def forecast():
     """Return a list of all data """
 
 
 #build Data class
+    session = Session(engine)
     results = session.query(Data).all()
 
 
@@ -79,7 +106,7 @@ def forecast():
         data_dict["norm_mn"] = data.norm_mn
         data_dict["norm_mx"] = data.norm_mx
         all_data.append(data_dict)
-
+    session.close()
     return jsonify(all_data)
 
 if __name__ == "__main__":
