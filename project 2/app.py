@@ -6,12 +6,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify, render_template
-
+from flask_sqlalchemy import SQLAlchemy
 
 #################################################
 # Flask Setup
 #################################################
 app = Flask(__name__)
+
 
 engine = create_engine("sqlite:///data.sqlite")
 
@@ -49,7 +50,7 @@ def names():
 
   return jsonify(all_names)
 
-@app.route("/data/<station_name>")
+@app.route("/<station_name>")
 def station_metadata(station_name):
     """Return the MetaData for a given station."""
     session=Session(engine)
