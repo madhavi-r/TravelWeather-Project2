@@ -5,92 +5,39 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 
-from flask import Flask, jsonify, render_template
-from flask_sqlalchemy import SQLAlchemy
+from flask_pymongo import PyMongo
+import scrape_file
 
-#################################################
-# Flask Setup
-#################################################
+from flask import Flask, jsonify, render_template, redirect
+
+
 app = Flask(__name__)
 
-
-engine = create_engine("sqlite:///data.sqlite")
-
-# reflect an existing database into a new model
+engine = create_engine("sqlite:///dataupdated.sqlite")
 Base = automap_base()
-# reflect the tables
-
 Base.prepare(engine, reflect=True)
-
-# Save reference to the table
 Data = Base.classes.data
 
-# Create our session (link) from Python to the DB
-session = Session(engine)
+app.config["MONGO_URI"]="mongodb://localhost:27017/project_app"
+mongo = PyMongo(app)
 
-#################################################
-# Flask Routes
-#################################################
 
 @app.route("/")
 def index():
-    """Return the homepage."""
-    return render_template("index.html")
+    shopping = mongo.db.shopping.find()
+    return render_template("index.html", shopping = shopping)
 
-@app.route("/names")
-def names():
-
-  # Query all station_name
-  session = Session(engine)
-  results = session.query(Data.station_name).all()
-
-  # Convert list of tuples into normal list
-  all_names = list(np.ravel(results))
-  session.close()
-
-  return jsonify(all_names)
-
-@app.route("/<station_name>")
-def station_metadata(station_name):
-    """Return the MetaData for a given station."""
-    session=Session(engine)
-
-    sel = [
-        Data.station_id,
-        Data.state,
-        Data.country,
-        Data.production_date,
-        Data.fcst_avg,
-        Data.norm_mn,
-        Data.norm_mx,
-    ]
-    results = session.query(*sel).filter(Data.station_name == station_name).all()
-    print(results)
-    # Create a dictionary entry for each row of metadata information
-    station_metadata = {}
-    for result in results:
-        station_metadata["station_id"] = result[0]
-        station_metadata["station_name"] = result[1]
-        station_metadata["state"] = result[2]
-        station_metadata["country"] = result[3]
-        station_metadata["production_date"] = result[4]
-        station_metadata["fcst_avg"] = result[5]
-        station_metadata["norm_mn"] = result[6]
-        station_metadata["norm_mx"] = result[7]
-
-    print(station_metadata)
-    session.close()
-    return jsonify(station_metadata)
+#@app.route("/storelatlon/<data>")
+#def index():
+    #shopping = mongo.db.shopping.find()
+    #return render_template("index.html", shopping = shopping)
 
 @app.route("/forecast")
 def forecast():
     """Return a list of all data """
-
-
-#build Data class
     session = Session(engine)
+    #build Data class
     results = session.query(Data).all()
-
 
     all_data = []
     for data in results:
@@ -109,6 +56,86 @@ def forecast():
         all_data.append(data_dict)
     session.close()
     return jsonify(all_data)
+
+
+@app.route("/scrape")
+def scrape():
+    mongo.db.shopping.delete_many({})
+    shopping = mongo.db.shopping
+
+    jackets = scrape_file.scrape_one()
+    jeans = scrape_file.scrape_two()
+    shoes = scrape_file.scrape_three()
+
+    shoppingdict = {
+
+        "Jacket_Title": jackets["title"],
+        "Jacket_Image": jackets["image"],
+        "Jacket_URL":jackets["url"],
+        "Jean_Title": jeans["title"],
+        "Jean_Image": jeans["image"],
+        "Jean_URL":jeans["url"],
+        "Shoes_Title": shoes["title"],
+        "Shoes_Image": shoes["image"],
+        "Shoes_URL":shoes["url"]
+    }
+
+    shopping.update({}, shoppingdict, upsert=True)
+
+    return redirect("/", code = 302)
+
+@app.route("/scrapetwo")
+def scrapetwo():
+    mongo.db.shopping.delete_many({})
+    shopping = mongo.db.shopping
+
+    shorts  = scrape_file.scrape_four()
+    polo = scrape_file.scrape_five()
+    sandals = scrape_file.scrape_six()
+
+    shoppingdict = {
+
+        "Shorts_Title": shorts["title"],
+        "Shorts_Image": shorts["image"],
+        "Shorts_URL": shorts["url"],
+        "Polo_Title": polo["title"],
+        "Polo_Image": polo["image"],
+        "Polo_URL": polo["url"],
+        "Sandals_Title": sandals["title"],
+        "Sandals_Image": sandals["image"],
+        "Sandals_URL": sandals["url"]
+    }
+
+    shopping.update({}, shoppingdict, upsert=True)
+
+    return redirect("/", code = 302)
+
+@app.route("/scrapethree")
+def scrapethree():
+    mongo.db.shopping.delete_many({})
+    shopping = mongo.db.shopping
+
+    dress_shirt  = scrape_file.scrape_seven()
+    dress_pant = scrape_file.scrape_eight()
+    dress_shoe = scrape_file.scrape_nine()
+
+    shoppingdict = {
+
+        "DShirt_Title": dress_shirt["title"],
+        "DShirt_Image": dress_shirt["image"],
+        "DShirt_URL": dress_shirt["url"],
+        "DP_Title": dress_pant["title"],
+        "DP_Image": dress_pant["image"],
+        "DP_URL": dress_pant["url"],
+        "DS_Title": dress_shoe["title"],
+        "DS_Image": dress_shoe["image"],
+        "DS_URL": dress_shoe["url"]
+    }
+
+    shopping.update({}, shoppingdict, upsert=True)
+    #return jsonify(shoppingdict)
+    return redirect("/", code = 302)
+
 
 if __name__ == "__main__":
    app.run(debug=True)
