@@ -46,7 +46,7 @@ d3.json(all_data, function(data){
             new mapboxgl.Marker(el)
               .setLngLat(coords)
               .setPopup(new mapboxgl.Popup({ offset: 25 })
-              .setHTML('<h3> 12/6/18 Data</h3><p> Average Temp:' + marker.fcst_avg + '</p><p> Station Location:' + marker.station_id + '</p><p> Station Name:' + marker.station_name + '</p>' ))
+              .setHTML('<h3> Station ID:' + marker.station_id + '</h3>' + '<p> Average Temp:' + marker.fcst_avg + '</p><p> Station Name:' + marker.station_name + '</p>'))
               .addTo(map);
           }) 
 
@@ -67,14 +67,14 @@ d3.json(all_data, function(data){
         geojson['features'].push(newFeature);
         }
         //console.log(geojson)
-        
-      
 
         // Listen for the `result` event from the MapboxGeocoder that is triggered when a user
         // makes a selection and add a symbol that matches the result.
         geocoder.on('result', function(ev) {
             var searchResult = ev.result.geometry;
             map.getSource('single-point').setData(searchResult);
+
+            //d3.json("/storelatlon/"+searchResult)
 
             geojson.features.forEach(function(station) {
             Object.defineProperty(station.properties, 'distance', {
@@ -92,8 +92,48 @@ d3.json(all_data, function(data){
 
             var closest = geojson.features[0].properties.fcst_avg
             console.log(closest)
+
+            d3.select("#avgtemp").text(closest);
+
+            if (closest <= 32 ) {
+                var linkAnchor = d3.select("#scrape_button")
+                var scrapeRoute = linkAnchor.attr("href") 
+                linkAnchor.attr("href", "/scrape")
+            }
+            if (closest > 32 && closest <= 55) {
+                var linkAnchor = d3.select("#scrape_button")
+                var scrapeRoute = linkAnchor.attr("href") 
+                linkAnchor.attr("href", "/scrapethree")
+            }
+            if (closest > 55) {
+                var linkAnchor = d3.select("#scrape_button")
+                var scrapeRoute = linkAnchor.attr("href") 
+                linkAnchor.attr("href", "/scrapetwo")
+            }
+
+            console.log(d3.select("#scrape_button").attr("href"))
+            // d3.json(/scrapethree,function(data){
+            //     data.forEach(function(row){
+
+            //         }
+            //     )
+            // })
         });
+
+        
+        var scrapingButton = d3.select("#scrape_button");
+        scrapingButton.on("click", function() {
+            
+
+
+        });
+
+
+
+
     });
+
+
 
 });
 
