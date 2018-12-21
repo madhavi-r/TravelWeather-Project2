@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Geo JSON</title>
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/superhero/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
+  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
+  integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+  crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
+  integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
+  crossorigin=""></script>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+    <!-- <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; left:960px; width:50%; }
+    </style> -->
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="static/css/style.css">
+</head>
+
+<body>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css' type='text/css' />
+<style>
+  #geocoder-container > div {
+    min-width:50%;
+    margin-left:25%;
+}
+</style>
+
+  <!-- <div class="container"> 
+    <div class="row">
+      <div class="col-md-6">
+          <div id="map"></div>
+      </div>
+      <div class="col-md-6">
+        <p></p>
+      </div>
+    </div>
+  </div> -->
+
+
+
+  <div id="main">
+      <div id="sidebar">
+
+<div class = "container">
+<div class="col-md-9">        
+    <div class="jumbotron text-center">
+        <h1>May We Suggest?</h1>
+        <p><a class="btn btn-primary btn-lg" id="scrape_button" href="" role="button" > find clothes </a></p>
+        <h5>(Select Location, then click the button)</h5>
+    </div>
+    
+    {% for shoppingdict in shopping%}
+    <div class = "container-fluid">
+        {% if shoppingdict.Jacket_Image %}
+        <div class = "row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                <h2 id="h2">Jackets</h2>
+                    <h3 id="h3">{{ shoppingdict.Jacket_Title }} </h3>
+                    <a href = {{ shoppingdict.Jacket_URL}}> Click here!</a>
+                        <img src = "{{ shoppingdict.Jacket_Image }}" alt = "Jacket Image" width="100" height="100">
+                </div>
+                <div class="col-md-4">
+                    <h2 id="h2">Jeans</h2>
+                        <h3 id="h3">{{ shoppingdict.Jean_Title }} </h3>
+                        <a href = {{ shoppingdict.Jean_URL }}> Click here!</a>
+                            <img src = "{{ shoppingdict.Jean_Image }}" alt = "Jean Image" width="100" height="100">
+                </div>
+                <div class="col-md-4">
+                    <h2 id="h2">Shoes</h2>
+                        <h3 id="h3">{{ shoppingdict.Shoes_Title }} </h3>
+                        <a href = {{ shoppingdict.Shoes_URL }}> Click here!</a>
+                            <img src = "{{ shoppingdict.Shoes_Image }}" alt = "Shoes Image" width="100" height="100">
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        {% endif %}
+        {% if shoppingdict.Polo_Image %}
+        <div class = "row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                <h2 id="h2">Polos</h2>
+                    <h3 id="h3">{{ shoppingdict.Polo_Title }} </h3>
+                    <a href = {{ shoppingdict.Polo_URL }}> Click here!</a>
+                        <img src = "{{ shoppingdict.Polo_Image }}" alt = "Jacket Image" width="100" height="100">
+                </div>
+                <div class="col-md-4">
+                    <h2 id="h2">Shorts</h2>
+                        <h3 id="h3">{{ shoppingdict.Shorts_Title }} </h3>
+                        <a href = {{ shoppingdict.Shorts_URL }}> Click here!</a>
+                            <img src = "{{ shoppingdict.Shorts_Image }}" alt = "Jean Image" width="100" height="100">
+                </div>
+                <div class="col-md-4">
+                    <h2 id="h2">Sandals</h2>
+                        <h3 id="h3">{{ shoppingdict.Sandals_Title }} </h3>
+                        <a href = {{ shoppingdict.Sandals_URL }}> Click here!</a>
+                            <img src = "{{ shoppingdict.Sandals_Image }}" alt = "Shoes Image" width="100" height="100">
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        {% endif %}
+        {% if shoppingdict.DP_Image %}
+        <div class = "row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                <h2 id="h2">Dress Pants</h2>
+                    <h3 id="h3">{{ shoppingdict.DP_Title }} </h3>
+                    <a href = {{ shoppingdict.DP_URL }}> Click here!</a>
+                        <img src = "{{ shoppingdict.DP_Image }}" alt = "Jacket Image" width="100" height="100">
+                </div>
+                <div class="col-md-4">
+                    <h2 id="h2">Dress Shirts</h2>
+                        <h3 id="h3">{{ shoppingdict.DShirt_Title }} </h3>
+                        <a href = {{ shoppingdict.DShirt_URL }}> Click here!</a>
+                            <img src = "{{ shoppingdict.DShirt_Image }}" alt = "Jean Image" width="100" height="100">
+                </div>
+                <div class="col-md-4">
+                    <h2 id="h2">Dress Shoes</h2>
+                        <h3 id="h3">{{ shoppingdict.DS_Title }} </h3>
+                        <a href = {{ shoppingdict.DS_URL }}> Click here!</a>
+                            <img src = "{{ shoppingdict.DS_Image }}" alt = "Shoes Image" width="100" height="100">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+</div>
+
+
+
+
+<!--<p> the varage temp of your vacation will be:</p>
+      <p id="avgtemp"></p> -->
+      </div>
+
+      <div id="map"></div>
+
+    </div>
+  </div>
+
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.js"></script>
+
+  <script type="text/javascript" src="static/js/config.js"></script>
+  <script type="text/javascript" src="static/js/logic.js"></script>
+</body>
+</html>
+
+
+
+
